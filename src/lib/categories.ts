@@ -1,0 +1,58 @@
+// Predefined categories for transaction classification
+export const CATEGORIES = [
+    "Uncategorized",
+    "Groceries",
+    "Dining",
+    "Takeout",
+    "Cafe",
+    "Snacks",
+    "Fuel",
+    "Car Payment",
+    "Car Repairs",
+    "Car Wash",
+    "Parking",
+    "Public Transit",
+    "Rideshare",
+    "Rent",
+    "Loan Payment",
+    "Utilities",
+    "Phone & Internet",
+    "Subscriptions",
+    "Investments",
+    "Insurance",
+    "Healthcare",
+    "Pharmacy",
+    "Fitness",
+    "Personal Care",
+    "Clothing",
+    "Electronics",
+    "Home & Garden",
+    "Books & Records",
+    "Hobbies",
+    "Entertainment",
+    "Travel",
+    "Hotels",
+    "Flights",
+    "Gifts",
+    "Charity",
+    "Education",
+    "Account Transfer",
+    "ATM Withdrawal",
+    "Bank Fee",
+    "Income",
+    "Refund",
+    "Other"
+] as const;
+
+export type Category = typeof CATEGORIES[number];
+
+// Re-export categorization functions from the service
+export {
+    autoCategorize,
+    categorize,
+    buildLearnedMappings,
+    normalizeTransactionName,
+    loadMappingsFromDB,
+    saveMappingToDB,
+    type LearnedMappings
+} from "./categorizationService";

@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///Users/tristan/Developer/Folioli/src/app/not-found.tsx"],"sourcesContent":["export default function NotFound() {\n    return (\n        <div className=\"flex min-h-screen items-center justify-center p-24\">\n            <h1 className=\"text-2xl font-bold\">404 - Page Not Found</h1>\n        </div>\n    );\n}\n"],"names":[],"mappings":";;;;;;AAAe,SAAS;IACpB,qBACI,8OAAC;QAAI,WAAU;kBACX,cAAA,8OAAC;YAAG,WAAU;sBAAqB;;;;;;;;;;;AAG/C"}}]
+}
