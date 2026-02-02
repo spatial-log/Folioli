@@ -1,5 +1,6 @@
 import { Trash2, AlertTriangle, Moon, Sun, Monitor, User, LogOut, Shield, Database, Bell, CreditCard, Bot, Upload } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useTheme } from "@/components/ThemeProvider";
 
 interface SettingsPageProps {
     onDeleteAllTransactions: () => Promise<void>;
@@ -8,7 +9,7 @@ interface SettingsPageProps {
 export function SettingsPage({ onDeleteAllTransactions }: SettingsPageProps) {
     // State for all settings
     const [currency, setCurrency] = useState("USD");
-    const [theme, setTheme] = useState("system");
+    const { theme, setTheme } = useTheme();
     const [aiSearch, setAiSearch] = useState(true);
     const [notifications, setNotifications] = useState({
         email: true,
@@ -26,8 +27,7 @@ export function SettingsPage({ onDeleteAllTransactions }: SettingsPageProps) {
         const storedCurrency = localStorage.getItem("folioli_currency");
         if (storedCurrency) setCurrency(storedCurrency);
 
-        const storedTheme = localStorage.getItem("folioli_theme");
-        if (storedTheme) setTheme(storedTheme);
+        // Theme is handled by ThemeProvider
 
         const storedAi = localStorage.getItem("folioli_ai_search");
         if (storedAi) setAiSearch(storedAi === "true");
@@ -49,11 +49,7 @@ export function SettingsPage({ onDeleteAllTransactions }: SettingsPageProps) {
         localStorage.setItem("folioli_currency", val);
     };
 
-    const updateTheme = (val: string) => {
-        setTheme(val);
-        localStorage.setItem("folioli_theme", val);
-        // In a real app, this would also apply the theme class to body/html
-    };
+    // Theme update is handled by useTheme hook
 
     const updateAiSearch = (val: boolean) => {
         setAiSearch(val);
@@ -86,29 +82,29 @@ export function SettingsPage({ onDeleteAllTransactions }: SettingsPageProps) {
 
     return (
         <div className="max-w-4xl mx-auto pb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-8">Settings</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-8">Settings</h2>
 
             <div className="space-y-8">
                 {/* General Settings */}
                 <section>
-                    <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4 pl-1">General</h3>
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 divide-y divide-gray-100 overflow-hidden">
+                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4 pl-1">General</h3>
+                    <div className="bg-card rounded-2xl shadow-sm border border-border divide-y divide-border overflow-hidden">
 
                         {/* Currency */}
                         <div className="p-4 flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-green-50 text-green-600 rounded-lg">
+                                <div className="p-2 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-lg">
                                     <CreditCard className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <p className="font-medium text-gray-900">Default Currency</p>
-                                    <p className="text-sm text-gray-500">Select your primary currency for reports</p>
+                                    <p className="font-medium text-foreground">Default Currency</p>
+                                    <p className="text-sm text-muted-foreground">Select your primary currency for reports</p>
                                 </div>
                             </div>
                             <select
                                 value={currency}
                                 onChange={(e) => updateCurrency(e.target.value)}
-                                className="bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block p-2.5 min-w-[100px]"
+                                className="bg-muted border border-border text-foreground text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block p-2.5 min-w-[100px]"
                             >
                                 <option value="USD">USD ($)</option>
                                 <option value="EUR">EUR (€)</option>
@@ -121,32 +117,32 @@ export function SettingsPage({ onDeleteAllTransactions }: SettingsPageProps) {
                         {/* Theme */}
                         <div className="p-4 flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-purple-50 text-purple-600 rounded-lg">
+                                <div className="p-2 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 rounded-lg">
                                     {theme === 'light' ? <Sun className="w-5 h-5" /> : theme === 'dark' ? <Moon className="w-5 h-5" /> : <Monitor className="w-5 h-5" />}
                                 </div>
                                 <div>
-                                    <p className="font-medium text-gray-900">Appearance</p>
-                                    <p className="text-sm text-gray-500">Customize how Folioli looks on your device</p>
+                                    <p className="font-medium text-foreground">Appearance</p>
+                                    <p className="text-sm text-muted-foreground">Customize how Folioli looks on your device</p>
                                 </div>
                             </div>
-                            <div className="flex bg-gray-100 p-1 rounded-lg">
+                            <div className="flex bg-muted p-1 rounded-lg">
                                 <button
-                                    onClick={() => updateTheme('light')}
-                                    className={`p-2 rounded-md transition-all ${theme === 'light' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-900'}`}
+                                    onClick={() => setTheme('light')}
+                                    className={`p-2 rounded-md transition-all ${theme === 'light' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
                                     title="Light Mode"
                                 >
                                     <Sun className="w-4 h-4" />
                                 </button>
                                 <button
-                                    onClick={() => updateTheme('dark')}
-                                    className={`p-2 rounded-md transition-all ${theme === 'dark' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-900'}`}
+                                    onClick={() => setTheme('dark')}
+                                    className={`p-2 rounded-md transition-all ${theme === 'dark' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
                                     title="Dark Mode"
                                 >
                                     <Moon className="w-4 h-4" />
                                 </button>
                                 <button
-                                    onClick={() => updateTheme('system')}
-                                    className={`p-2 rounded-md transition-all ${theme === 'system' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-900'}`}
+                                    onClick={() => setTheme('system')}
+                                    className={`p-2 rounded-md transition-all ${theme === 'system' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
                                     title="System Preference"
                                 >
                                     <Monitor className="w-4 h-4" />
@@ -157,14 +153,14 @@ export function SettingsPage({ onDeleteAllTransactions }: SettingsPageProps) {
                         {/* Notification Settings */}
                         <div className="p-4">
                             <div className="flex items-start gap-4 mb-4">
-                                <div className="p-2 bg-blue-50 text-blue-600 rounded-lg mt-1">
+                                <div className="p-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg mt-1">
                                     <Bell className="w-5 h-5" />
                                 </div>
                                 <div className="flex-1">
-                                    <p className="font-medium text-gray-900 mb-1">Notifications</p>
+                                    <p className="font-medium text-foreground mb-1">Notifications</p>
                                     <div className="space-y-3">
                                         <label className="flex items-center justify-between cursor-pointer">
-                                            <span className="text-sm text-gray-600">Email Notifications</span>
+                                            <span className="text-sm text-muted-foreground">Email Notifications</span>
                                             <input
                                                 type="checkbox"
                                                 className="toggle toggle-success toggle-sm"
@@ -173,7 +169,7 @@ export function SettingsPage({ onDeleteAllTransactions }: SettingsPageProps) {
                                             />
                                         </label>
                                         <label className="flex items-center justify-between cursor-pointer">
-                                            <span className="text-sm text-gray-600">Push Notifications</span>
+                                            <span className="text-sm text-muted-foreground">Push Notifications</span>
                                             <input
                                                 type="checkbox"
                                                 className="toggle toggle-success toggle-sm"
@@ -182,7 +178,7 @@ export function SettingsPage({ onDeleteAllTransactions }: SettingsPageProps) {
                                             />
                                         </label>
                                         <label className="flex items-center justify-between cursor-pointer">
-                                            <span className="text-sm text-gray-600">Weekly Reports</span>
+                                            <span className="text-sm text-muted-foreground">Weekly Reports</span>
                                             <input
                                                 type="checkbox"
                                                 className="toggle toggle-success toggle-sm"
@@ -198,17 +194,17 @@ export function SettingsPage({ onDeleteAllTransactions }: SettingsPageProps) {
                         {/* AI Search */}
                         <div className="p-4 flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+                                <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-lg">
                                     <Bot className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <p className="font-medium text-gray-900">AI Enhanced Search</p>
-                                    <p className="text-sm text-gray-500">Allow AI to index transactions for natural language search</p>
+                                    <p className="font-medium text-foreground">AI Enhanced Search</p>
+                                    <p className="text-sm text-muted-foreground">Allow AI to index transactions for natural language search</p>
                                 </div>
                             </div>
                             <label className="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" checked={aiSearch} onChange={(e) => updateAiSearch(e.target.checked)} className="sr-only peer" />
-                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                                <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
                             </label>
                         </div>
 
@@ -217,25 +213,25 @@ export function SettingsPage({ onDeleteAllTransactions }: SettingsPageProps) {
 
                 {/* Account Settings */}
                 <section>
-                    <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4 pl-1">Account</h3>
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 divide-y divide-gray-100 overflow-hidden">
+                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4 pl-1">Account</h3>
+                    <div className="bg-card rounded-2xl shadow-sm border border-border divide-y divide-border overflow-hidden">
 
                         {/* Profile Picture */}
                         <div className="p-4 flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-gray-100 text-gray-600 rounded-full">
+                                <div className="p-2 bg-muted text-muted-foreground rounded-full">
                                     <User className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <p className="font-medium text-gray-900">Profile Picture</p>
-                                    <p className="text-sm text-gray-500">Update your profile avatar</p>
+                                    <p className="font-medium text-foreground">Profile Picture</p>
+                                    <p className="text-sm text-muted-foreground">Update your profile avatar</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold overflow-hidden border border-gray-300">
+                                <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground font-bold overflow-hidden border border-border">
                                     tr
                                 </div>
-                                <button className="text-sm font-medium text-indigo-600 hover:text-indigo-800 flex items-center gap-1">
+                                <button className="text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 flex items-center gap-1">
                                     <Upload className="w-3.5 h-3.5" /> Change
                                 </button>
                             </div>
@@ -244,28 +240,28 @@ export function SettingsPage({ onDeleteAllTransactions }: SettingsPageProps) {
                         {/* Password */}
                         <div className="p-4 flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-gray-50 text-gray-600 rounded-lg">
+                                <div className="p-2 bg-muted text-muted-foreground rounded-lg">
                                     <Shield className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <p className="font-medium text-gray-900">Password</p>
-                                    <p className="text-sm text-gray-500">Manage your password and security</p>
+                                    <p className="font-medium text-foreground">Password</p>
+                                    <p className="text-sm text-muted-foreground">Manage your password and security</p>
                                 </div>
                             </div>
-                            <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                            <button className="px-4 py-2 text-sm font-medium text-foreground bg-card border border-border rounded-lg hover:bg-muted transition">
                                 Change Password
                             </button>
                         </div>
 
                         {/* Logout */}
-                        <div className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors cursor-pointer">
+                        <div className="p-4 flex items-center justify-between hover:bg-muted transition-colors cursor-pointer">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-gray-50 text-gray-600 rounded-lg">
+                                <div className="p-2 bg-muted text-muted-foreground rounded-lg">
                                     <LogOut className="w-5 h-5" />
                                 </div>
-                                <p className="font-medium text-gray-900">Log Out</p>
+                                <p className="font-medium text-foreground">Log Out</p>
                             </div>
-                            <div className="text-gray-400">→</div>
+                            <div className="text-muted-foreground">→</div>
                         </div>
 
                     </div>
@@ -273,24 +269,24 @@ export function SettingsPage({ onDeleteAllTransactions }: SettingsPageProps) {
 
                 {/* Data & Privacy */}
                 <section>
-                    <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4 pl-1">Data & Privacy</h3>
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 divide-y divide-gray-100 overflow-hidden">
+                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4 pl-1">Data & Privacy</h3>
+                    <div className="bg-card rounded-2xl shadow-sm border border-border divide-y divide-border overflow-hidden">
 
                         {/* Backup Frequency */}
                         <div className="p-4 flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-orange-50 text-orange-600 rounded-lg">
+                                <div className="p-2 bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 rounded-lg">
                                     <Database className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <p className="font-medium text-gray-900">Backup Frequency</p>
-                                    <p className="text-sm text-gray-500">How often should we backup your data?</p>
+                                    <p className="font-medium text-foreground">Backup Frequency</p>
+                                    <p className="text-sm text-muted-foreground">How often should we backup your data?</p>
                                 </div>
                             </div>
                             <select
                                 value={backupFreq}
                                 onChange={(e) => updateBackup(e.target.value)}
-                                className="bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block p-2.5"
+                                className="bg-muted border border-border text-foreground text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block p-2.5"
                             >
                                 <option value="daily">Daily</option>
                                 <option value="weekly">Weekly</option>
@@ -302,12 +298,12 @@ export function SettingsPage({ onDeleteAllTransactions }: SettingsPageProps) {
                         {/* Delete Account */}
                         <div className="p-4 flex items-center justify-between opacity-60 hover:opacity-100 transition-opacity">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-red-50 text-red-600 rounded-lg">
+                                <div className="p-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg">
                                     <User className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <p className="font-medium text-gray-900">Delete Account</p>
-                                    <p className="text-sm text-gray-500">Permanently delete your account</p>
+                                    <p className="font-medium text-foreground">Delete Account</p>
+                                    <p className="text-sm text-muted-foreground">Permanently delete your account</p>
                                 </div>
                             </div>
                             <button className="text-red-600 text-sm font-medium hover:underline">
@@ -319,15 +315,15 @@ export function SettingsPage({ onDeleteAllTransactions }: SettingsPageProps) {
 
                 {/* Danger Zone */}
                 <section>
-                    <h3 className="text-sm font-semibold text-red-600 uppercase tracking-wide mb-4 pl-1 flex items-center gap-2">
+                    <h3 className="text-sm font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide mb-4 pl-1 flex items-center gap-2">
                         <AlertTriangle className="w-4 h-4" />
                         Danger Zone
                     </h3>
-                    <div className="bg-red-50 border border-red-200 rounded-2xl overflow-hidden p-4">
+                    <div className="bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30 rounded-2xl overflow-hidden p-4">
                         <div className="flex items-center justify-between">
                             <div>
-                                <h4 className="text-sm font-semibold text-red-900">Delete All Transactions</h4>
-                                <p className="text-sm text-red-700 mt-1 opacity-80">
+                                <h4 className="text-sm font-semibold text-red-900 dark:text-red-200">Delete All Transactions</h4>
+                                <p className="text-sm text-red-700 dark:text-red-300 mt-1 opacity-80">
                                     Permanently remove all transaction data. This cannot be undone.
                                 </p>
                             </div>
@@ -342,54 +338,58 @@ export function SettingsPage({ onDeleteAllTransactions }: SettingsPageProps) {
                     </div>
                 </section>
 
-                <div className="text-center text-xs text-gray-400 pt-8">
+
+
+                <div className="text-center text-xs text-muted-foreground pt-8">
                     Folioli v1.0.2 • Build 2024.1
                 </div>
             </div>
 
             {/* Delete Confirmation Modal */}
-            {showDeleteConfirm && (
-                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 animate-in fade-in duration-200" onClick={() => setShowDeleteConfirm(false)}>
-                    <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-md mx-4 transform transition-all scale-100" onClick={e => e.stopPropagation()}>
-                        <div className="flex items-center gap-4 mb-5">
-                            <div className="p-3 bg-red-100 rounded-full flex-shrink-0">
-                                <AlertTriangle className="w-6 h-6 text-red-600" />
+            {
+                showDeleteConfirm && (
+                    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 animate-in fade-in duration-200" onClick={() => setShowDeleteConfirm(false)}>
+                        <div className="bg-card rounded-2xl shadow-2xl p-6 max-w-md mx-4 transform transition-all scale-100 border border-border" onClick={e => e.stopPropagation()}>
+                            <div className="flex items-center gap-4 mb-5">
+                                <div className="p-3 bg-red-100 dark:bg-red-900/20 rounded-full flex-shrink-0">
+                                    <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-foreground leading-tight">Delete All Transactions?</h3>
+                                    <p className="text-sm text-muted-foreground mt-1">This action is permanent.</p>
+                                </div>
                             </div>
-                            <div>
-                                <h3 className="text-lg font-bold text-gray-900 leading-tight">Delete All Transactions?</h3>
-                                <p className="text-sm text-gray-500 mt-1">This action is permanent.</p>
+                            <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+                                You are about to permanently delete <strong>all transaction data</strong> from your local database.
+                                This action cannot be undone and no backups will be available unless you've exported your data.
+                            </p>
+                            <div className="flex gap-3 justify-end">
+                                <button
+                                    onClick={() => setShowDeleteConfirm(false)}
+                                    className="px-4 py-2 text-sm font-medium text-foreground bg-card border border-border rounded-lg hover:bg-muted focus:ring-2 focus:ring-border transition-all"
+                                    disabled={isDeleting}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleDeleteAll}
+                                    className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:ring-red-100 transition-all disabled:opacity-70 flex items-center gap-2"
+                                    disabled={isDeleting}
+                                >
+                                    {isDeleting ? (
+                                        <>
+                                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                            Deleting...
+                                        </>
+                                    ) : (
+                                        "Yes, Delete Everything"
+                                    )}
+                                </button>
                             </div>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-6 leading-relaxed">
-                            You are about to permanently delete <strong>all transaction data</strong> from your local database.
-                            This action cannot be undone and no backups will be available unless you've exported your data.
-                        </p>
-                        <div className="flex gap-3 justify-end">
-                            <button
-                                onClick={() => setShowDeleteConfirm(false)}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-gray-200 transition-all"
-                                disabled={isDeleting}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleDeleteAll}
-                                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:ring-red-100 transition-all disabled:opacity-70 flex items-center gap-2"
-                                disabled={isDeleting}
-                            >
-                                {isDeleting ? (
-                                    <>
-                                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                        Deleting...
-                                    </>
-                                ) : (
-                                    "Yes, Delete Everything"
-                                )}
-                            </button>
                         </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 }

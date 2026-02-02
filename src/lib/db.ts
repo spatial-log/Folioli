@@ -107,3 +107,30 @@ export function getDB(): Database {
     }
     return dbInstance;
 }
+
+/**
+ * Execute a batch of operations in a single transaction
+ * @param operations Array of query strings or query objects
+ */
+export async function executeTransaction(
+    db: Database,
+    operations: Array<{ sql: string; args?: any[] }>
+): Promise<void> {
+    if (!db) return;
+
+    // Use explicit BEGIN/COMMIT transaction block
+    try {
+        await db.execute("BEGIN TRANSACTION");
+
+        for (const op of operations) {
+            await db.execute(op.sql, op.args || []);
+        }
+
+        await db.execute("COMMIT");
+    } catch (error) {
+        // Rollback on any error
+        await db.execute("ROLLBACK");
+        console.error("Transaction failed, rolled back:", error);
+        throw error;
+    }
+}

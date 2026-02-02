@@ -11,15 +11,26 @@ import { DropZone } from "@/components/DropZone";
 import { Header } from "@/components/Header";
 import { SettingsPage } from "@/components/SettingsPage";
 import { TransactionTable } from "@/components/TransactionTable";
+import { Toast, ToastType } from "@/components/ui/Toast";
 
 
 export default function Home() {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    // Toast state
+    const [toast, setToast] = useState<{ message: string; type: ToastType; visible: boolean }>({
+        message: "",
+        type: "success",
+        visible: false
+    });
+
     const [isDragOver, setIsDragOver] = useState(false);
     const [activeTab, setActiveTab] = useState<Tab>("table");
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [learnedMappings, setLearnedMappings] = useState<LearnedMappings>(new Map());
+
+    // Track if detailed changes have been made to avoid saving on initial load
+    const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
     // Initialize database and Tauri file drop listener on component mount
     useEffect(() => {
@@ -166,6 +177,7 @@ export default function Home() {
             alert("Could not map any transactions. Check CSV headers. Looked for: Date, Description/Name, Amount.");
         } else {
             setTransactions(prev => [...mapped, ...prev]);
+            setHasUnsavedChanges(true); // Flag import as needing save
         }
     }, [learnedMappings]);
 
@@ -175,6 +187,7 @@ export default function Home() {
             copy[index] = { ...copy[index], [field]: value };
             return copy;
         });
+        setHasUnsavedChanges(true);
     };
 
     const handleSave = async () => {
@@ -210,6 +223,7 @@ export default function Home() {
 
     const handleDelete = useCallback((index: number) => {
         setTransactions(prev => prev.filter((_, i) => i !== index));
+        setHasUnsavedChanges(true);
     }, []);
 
     const handleDeleteAllTransactions = async () => {
@@ -227,25 +241,32 @@ export default function Home() {
         }
     };
 
-    if (isLoading) return <div className="p-8 text-center">Loading Folioli...</div>;
+    if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading Folioli...</div>;
 
     return (
-        <div className={`h-screen bg-gray-50 flex flex-col font-sans overflow-hidden ${isDragOver ? 'ring-4 ring-lime-600 ring-inset' : ''}`}>
+        <div className={`h-screen bg-background flex flex-col font-sans overflow-hidden ${isDragOver ? 'ring-4 ring-lime-600 ring-inset' : ''}`}>
             <Header activeTab={activeTab} onTabChange={setActiveTab} />
+
+            <Toast
+                message={toast.message}
+                type={toast.type}
+                isVisible={toast.visible}
+                onClose={() => setToast(prev => ({ ...prev, visible: false }))}
+            />
 
             {/* Error Banner */}
             {errorMessage && (
                 <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
-                    <div className="flex items-center gap-3 px-5 py-3 bg-white border border-red-200 rounded-2xl shadow-lg">
-                        <div className="p-2 bg-red-100 rounded-full">
-                            <svg className="w-5 h-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div className="flex items-center gap-3 px-5 py-3 bg-card border border-red-200 dark:border-red-900/30 rounded-2xl shadow-lg">
+                        <div className="p-2 bg-red-100 dark:bg-red-900/20 rounded-full">
+                            <svg className="w-5 h-5 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
                         </div>
-                        <span className="text-sm font-medium text-gray-900">{errorMessage}</span>
+                        <span className="text-sm font-medium text-foreground">{errorMessage}</span>
                         <button
                             onClick={() => setErrorMessage(null)}
-                            className="ml-2 p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition"
+                            className="ml-2 p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition"
                         >
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

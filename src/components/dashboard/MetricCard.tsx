@@ -2,6 +2,7 @@
 
 import { Minus, TrendingUp, TrendingDown } from "lucide-react";
 import { formatCurrency, formatPercentage, getMoMChange } from "@/lib/dashboardUtils";
+import { RogueCard, RogueBadge } from "@malovey/rogue-ui";
 
 interface MetricCardProps {
     title: string;
@@ -20,60 +21,51 @@ export function MetricCard({ title, value, previousValue, type, icon, delay = 0 
     // For expenses, "positive" (spending more) is actually bad
     const isGood = type === "expense" ? !isPositive : isPositive;
 
-    const colorClass = isNeutral
-        ? "text-gray-500"
+    const trendColor = isNeutral
+        ? "default"
         : isGood
-            ? "text-emerald-600"
-            : "text-red-500";
+            ? "success"
+            : "error";
 
-    const bgGradient = type === "income"
-        ? "from-emerald-50 to-emerald-100/50"
+    const borderColor = type === "income"
+        ? "border-emerald-200 dark:border-emerald-800"
         : type === "expense"
-            ? "from-red-50 to-rose-100/50"
-            : "from-lime-50 to-lime-100/50";
-
-    const iconBg = type === "income"
-        ? "bg-emerald-500"
-        : type === "expense"
-            ? "bg-red-500"
-            : "bg-lime-600";
+            ? "border-red-200 dark:border-red-800"
+            : "border-lime-200 dark:border-lime-800";
 
     return (
-        <div
-            className={`relative overflow-hidden bg-gradient-to-br ${bgGradient} rounded-2xl p-6 shadow-sm border border-white/50 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:scale-[1.02] group`}
+        <RogueCard
+            className={`transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${borderColor}`}
             style={{ animationDelay: `${delay}ms` }}
         >
-            {/* Background decoration */}
-            <div className="absolute -right-4 -top-4 w-24 h-24 rounded-full bg-white/30 blur-2xl group-hover:scale-150 transition-transform duration-500" />
-
-            <div className="relative">
+            <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                    <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">{title}</span>
-                    <div className={`p-2 ${iconBg} rounded-xl text-white shadow-lg`}>
+                    <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">{title}</span>
+                    <div className="text-muted-foreground/60">
                         {icon}
                     </div>
                 </div>
 
-                <div className="mb-2">
-                    <span className="text-4xl font-bold text-gray-900 tracking-tight">
+                <div className="mb-4">
+                    <span className="text-4xl font-bold text-foreground tracking-tight">
                         {formatCurrency(Math.abs(value))}
                     </span>
                 </div>
 
-                <div className={`flex items-center gap-1.5 ${colorClass}`}>
-                    {isNeutral ? (
-                        <Minus className="w-4 h-4" />
-                    ) : isPositive ? (
-                        <TrendingUp className="w-4 h-4" />
-                    ) : (
-                        <TrendingDown className="w-4 h-4" />
-                    )}
-                    <span className="text-sm font-semibold">
-                        {formatPercentage(change)}
-                    </span>
-                    <span className="text-xs text-gray-500 ml-1">vs last month</span>
+                <div className="flex items-center gap-2">
+                    <RogueBadge variant={trendColor} className="flex items-center gap-1">
+                        {isNeutral ? (
+                            <Minus className="w-3 h-3" />
+                        ) : isPositive ? (
+                            <TrendingUp className="w-3 h-3" />
+                        ) : (
+                            <TrendingDown className="w-3 h-3" />
+                        )}
+                        <span>{formatPercentage(change)}</span>
+                    </RogueBadge>
+                    <span className="text-xs text-muted-foreground">vs last month</span>
                 </div>
             </div>
-        </div>
+        </RogueCard>
     );
 }

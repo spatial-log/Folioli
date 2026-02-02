@@ -248,18 +248,18 @@ export function TransactionTable({ transactions, onUpdate, onDelete, onPasteImpo
     const hasPendingTransactions = transactions.some(t => t.status === "pending");
 
     return (
-        <div className="h-full bg-white border border-gray-300 shadow-sm rounded-2xl overflow-hidden flex flex-col">
+        <div className="h-full bg-card border border-border shadow-sm rounded-2xl overflow-hidden flex flex-col">
             {/* Header */}
-            <div className="flex justify-between items-center p-4 bg-gray-50 border-b border-gray-300 gap-4">
+            <div className="flex justify-between items-center p-4 bg-muted border-b border-border gap-4">
                 <div className="flex items-center gap-4">
-                    <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide">Transactions</h2>
-                    <span className="text-xs text-gray-400 font-medium">{sortedTransactions.length} total</span>
+                    <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wide">Transactions</h2>
+                    <span className="text-xs text-muted-foreground/60 font-medium">{sortedTransactions.length} total</span>
                 </div>
 
                 <div className="flex items-center gap-4">
                     {/* Rows per page selector */}
-                    <div className="flex items-center gap-2 bg-white rounded-lg border border-gray-200 p-1 shadow-sm">
-                        <span className="text-xs font-medium text-gray-400 px-2 uppercase tracking-wide">Show</span>
+                    <div className="flex items-center gap-2 bg-card rounded-lg border border-border p-1 shadow-sm">
+                        <span className="text-xs font-medium text-muted-foreground px-2 uppercase tracking-wide">Show</span>
                         <div className="flex gap-1">
                             {[50, 100, 200].map(count => (
                                 <button
@@ -268,8 +268,8 @@ export function TransactionTable({ transactions, onUpdate, onDelete, onPasteImpo
                                     className={clsx(
                                         "px-2.5 py-1 text-xs font-medium rounded-md transition-all",
                                         visibleCount === count
-                                            ? "bg-lime-100 text-lime-700 shadow-sm"
-                                            : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                                            ? "bg-lime-100 dark:bg-lime-900/20 text-lime-700 dark:text-lime-400 shadow-sm"
+                                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
                                     )}
                                 >
                                     {count}
@@ -280,8 +280,8 @@ export function TransactionTable({ transactions, onUpdate, onDelete, onPasteImpo
                                 className={clsx(
                                     "px-2.5 py-1 text-xs font-medium rounded-md transition-all",
                                     visibleCount === 'all'
-                                        ? "bg-lime-100 text-lime-700 shadow-sm"
-                                        : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                                        ? "bg-lime-100 dark:bg-lime-900/20 text-lime-700 dark:text-lime-400 shadow-sm"
+                                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
                                 )}
                             >
                                 All
@@ -342,30 +342,30 @@ export function TransactionTable({ transactions, onUpdate, onDelete, onPasteImpo
                             <th className="w-12"></th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
+                    <tbody className="divide-y divide-border">
                         {displayedTransactions.map((tx, sortedIdx) => {
                             const originalIdx = getOriginalIndex(sortedIdx);
                             return (
-                                <tr key={originalIdx} className={clsx("hover:bg-lime-50/50 transition-colors group", tx.status === "pending" && "bg-orange-50")}>
-                                    <td className="px-4 py-3 text-sm text-gray-900 border-r border-gray-200 truncate">{tx.date}</td>
-                                    <td className="px-4 py-3 text-sm font-medium text-gray-900 border-r border-gray-200 truncate">{tx.name}</td>
+                                <tr key={originalIdx} className={clsx("hover:bg-muted/50 transition-colors group", tx.status === "pending" && "bg-orange-50 dark:bg-orange-900/10")}>
+                                    <td className="px-4 py-3 text-sm text-foreground border-r border-border truncate">{tx.date}</td>
+                                    <td className="px-4 py-3 text-sm font-medium text-foreground border-r border-border truncate">{tx.name}</td>
                                     <td className={clsx(
-                                        "px-4 py-3 text-sm text-right font-mono border-r border-gray-200 truncate",
-                                        tx.amount < 0 ? "text-red-600" : "text-emerald-700 font-medium"
+                                        "px-4 py-3 text-sm text-right font-mono border-r border-border truncate",
+                                        tx.amount < 0 ? "text-red-600 dark:text-red-400" : "text-emerald-700 dark:text-emerald-400 font-medium"
                                     )}>
                                         {tx.amount < 0 ? "-" : ""}${Math.abs(tx.amount).toFixed(2)}
                                     </td>
-                                    <td className="px-0 py-0 border-r border-gray-200 relative">
+                                    <td className="px-0 py-0 border-r border-border relative">
                                         <SearchableSelect
                                             options={CATEGORIES}
                                             value={tx.category || "Uncategorized"}
                                             onChange={(value) => onUpdate(originalIdx, "category", value)}
                                             placeholder="Search categories..."
                                             emptyMessage="No matching categories"
-                                            className={tx.status === "pending" ? "text-orange-600 font-medium" : undefined}
+                                            className={tx.status === "pending" ? "text-orange-600 dark:text-orange-400 font-medium" : undefined}
                                         />
                                     </td>
-                                    <td className="px-4 py-3 text-sm text-gray-500 truncate">
+                                    <td className="px-4 py-3 text-sm text-muted-foreground truncate">
                                         {tx.memo || "—"}
                                     </td>
 
@@ -391,15 +391,15 @@ export function TransactionTable({ transactions, onUpdate, onDelete, onPasteImpo
             </div>
             {/* Pagination Controls - Minimal */}
             {visibleCount !== 'all' && sortedTransactions.length > 0 && (
-                <div className="flex items-center justify-between px-3 py-2 border-t border-gray-100 bg-white">
-                    <div className="text-xs text-gray-400">
-                        <span className="font-medium text-gray-600">{(currentPage - 1) * visibleCount + 1}-{(Math.min(currentPage * visibleCount, sortedTransactions.length))}</span> of {sortedTransactions.length}
+                <div className="flex items-center justify-between px-3 py-2 border-t border-border bg-card">
+                    <div className="text-xs text-muted-foreground">
+                        <span className="font-medium text-foreground">{(currentPage - 1) * visibleCount + 1}-{(Math.min(currentPage * visibleCount, sortedTransactions.length))}</span> of {sortedTransactions.length}
                     </div>
                     <div className="flex items-center gap-1">
                         <button
                             onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                             disabled={currentPage === 1}
-                            className="p-1 text-gray-400 hover:text-gray-700 hover:bg-gray-50 rounded disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                            className="p-1 text-muted-foreground hover:text-foreground hover:bg-muted rounded disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
                             title="Previous Page"
                         >
                             <ChevronLeft className="w-4 h-4" />
@@ -410,7 +410,7 @@ export function TransactionTable({ transactions, onUpdate, onDelete, onPasteImpo
                         <button
                             onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                             disabled={currentPage === totalPages}
-                            className="p-1 text-gray-400 hover:text-gray-700 hover:bg-gray-50 rounded disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                            className="p-1 text-muted-foreground hover:text-foreground hover:bg-muted rounded disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
                             title="Next Page"
                         >
                             <ChevronRight className="w-4 h-4" />

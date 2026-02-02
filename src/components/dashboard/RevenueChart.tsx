@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { formatCurrency, getMonthlyTotals, MonthlyData } from "@/lib/dashboardUtils";
 import { Transaction } from "@/lib/types";
+import { RogueCard, RogueCardTitle } from "@malovey/rogue-ui";
 
 interface RevenueChartProps {
     transactions: Transaction[];
@@ -22,12 +23,12 @@ export function RevenueChart({ transactions }: RevenueChartProps) {
     );
 
     return (
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 h-full flex flex-col">
-            <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-6">
+        <RogueCard className="h-full overflow-hidden">
+            <RogueCardTitle className="mb-4">
                 Income vs Expenses
-            </h3>
+            </RogueCardTitle>
 
-            <div className="flex-1 min-h-[300px] w-full">
+            <div className="h-[320px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                     <AreaChart
                         data={data}
@@ -48,18 +49,18 @@ export function RevenueChart({ transactions }: RevenueChartProps) {
                                 <stop offset="95%" stopColor="#EF4444" stopOpacity={0} />
                             </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" strokeOpacity={0.5} />
                         <XAxis
                             dataKey="monthLabel"
                             axisLine={false}
                             tickLine={false}
-                            tick={{ fill: '#6B7280', fontSize: 12 }}
+                            tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
                             dy={10}
                         />
                         <YAxis
                             axisLine={false}
                             tickLine={false}
-                            tick={{ fill: '#6B7280', fontSize: 12 }}
+                            tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
                             tickFormatter={(value) => `$${value / 1000}k`}
                             domain={[0, maxValue * 1.1]}
                         />
@@ -88,23 +89,23 @@ export function RevenueChart({ transactions }: RevenueChartProps) {
                     </AreaChart>
                 </ResponsiveContainer>
             </div>
-        </div>
+        </RogueCard>
     );
 }
 
 const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
         return (
-            <div className="bg-white/90 backdrop-blur-md border border-gray-100 p-4 rounded-xl shadow-xl">
-                <p className="text-sm font-semibold text-gray-900 mb-2">{label}</p>
+            <div className="bg-card/90 backdrop-blur-md border border-border p-4 rounded-xl shadow-xl">
+                <p className="text-sm font-semibold text-foreground mb-2">{label}</p>
                 {payload.map((entry: any, index: number) => (
                     <div key={index} className="flex items-center gap-2 mb-1 last:mb-0">
                         <div
                             className="w-2 h-2 rounded-full"
                             style={{ backgroundColor: entry.color }}
                         />
-                        <span className="text-xs text-gray-500 capitalize">{entry.name}:</span>
-                        <span className="text-sm font-bold text-gray-900">
+                        <span className="text-xs text-muted-foreground capitalize">{entry.name}:</span>
+                        <span className="text-sm font-bold text-foreground">
                             {formatCurrency(entry.value)}
                         </span>
                     </div>

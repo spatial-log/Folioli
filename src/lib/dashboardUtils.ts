@@ -15,15 +15,48 @@ export const CATEGORY_GROUPS: Record<string, Category[]> = {
     "Other": ["Education", "Gifts", "Charity", "Other", "Uncategorized", "Healthcare", "Pharmacy", "Fitness", "Personal Care", "Travel", "Hotels", "Flights"],
 };
 
+// Pre-compute reverse lookup map: Category -> Group
+// This avoids iterating through arrays every time getCategoryGroup is called (O(1) vs O(N))
+const CATEGORY_TO_GROUP: Record<string, string> = {};
+
+// Initialize reverse lookup
+(function initCategoryMap() {
+    for (const [group, categories] of Object.entries(CATEGORY_GROUPS)) {
+        for (const cat of categories) {
+            CATEGORY_TO_GROUP[cat] = group;
+        }
+    }
+})();
+
+// Simple cache for date parsing
+// Format "YYYY-MM-DD" or "MM/DD/YYYY" -> Date object
+const DATE_CACHE = new Map<string, Date>();
+
 /**
  * Parse a date string robustly (handles various formats)
+ * Memoized version to prevent re-parsing the same date strings 1000s of times
  */
 export function parseDate(dateStr: string): Date | null {
     if (!dateStr) return null;
 
+    // Check cache first
+    if (DATE_CACHE.has(dateStr)) {
+        const cached = DATE_CACHE.get(dateStr)!;
+        // Return a clone to avoid mutation side-effects if any code mutates dates (it generally shouldn't)
+        // But for pure read-only dashboard use, returning reference is faster.
+        // Let's be safe and return new Date(cached)? No, overhead.
+        // Assuming dates are treated as immutable value objects in this app.
+        return cached;
+    }
+
     // Try direct parsing first
     let date = new Date(dateStr);
-    if (!isNaN(date.getTime())) return date;
+
+    // Check if valid
+    if (!isNaN(date.getTime())) {
+        DATE_CACHE.set(dateStr, date);
+        return date;
+    }
 
     // Try parsing common formats like "MM/DD/YYYY" or "DD/MM/YYYY"
     const parts = dateStr.split(/[\/\-\.]/);
@@ -37,7 +70,11 @@ export function parseDate(dateStr: string): Date | null {
             // MM/DD/YYYY or DD/MM/YYYY
             date = new Date(c, a - 1, b);
         }
-        if (!isNaN(date.getTime())) return date;
+
+        if (!isNaN(date.getTime())) {
+            DATE_CACHE.set(dateStr, date);
+            return date;
+        }
     }
 
     return null;
@@ -45,16 +82,11 @@ export function parseDate(dateStr: string): Date | null {
 
 /**
  * Get category group for a specific category
+ * Optimized O(1) lookup
  */
 export function getCategoryGroup(category: string | undefined): string {
     if (!category) return "Other";
-
-    for (const [group, categories] of Object.entries(CATEGORY_GROUPS)) {
-        if (categories.includes(category as Category)) {
-            return group;
-        }
-    }
-    return "Other";
+    return CATEGORY_TO_GROUP[category] || "Other";
 }
 
 /**

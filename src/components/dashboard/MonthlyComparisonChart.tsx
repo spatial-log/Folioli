@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { RogueCard, RogueCardTitle } from "@malovey/rogue-ui";
 import { Transaction } from "@/lib/types";
 
 interface MonthlyComparisonChartProps {
@@ -76,12 +77,12 @@ export function MonthlyComparisonChart({ transactions }: MonthlyComparisonChartP
     }
 
     return (
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 h-full flex flex-col">
+        <RogueCard className="h-full overflow-hidden">
             {/* Header with year navigation */}
-            <div className="flex items-center justify-between mb-6">
-                <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide">
+            <div className="flex items-center justify-between mb-4">
+                <RogueCardTitle>
                     Income vs Expenses
-                </h3>
+                </RogueCardTitle>
                 <div className="flex items-center gap-2">
                     <button
                         onClick={() => setYear(y => y - 1)}
@@ -105,29 +106,29 @@ export function MonthlyComparisonChart({ transactions }: MonthlyComparisonChartP
 
             {/* Chart or Empty State */}
             {!hasData ? (
-                <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">
+                <div className="h-[340px] flex items-center justify-center text-gray-400 text-sm">
                     No data for {year}. Try navigating to a different year.
                 </div>
             ) : (
-                <div className="flex-1 min-h-[280px]">
+                <div className="h-[340px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" strokeOpacity={0.5} />
                             <XAxis
                                 dataKey="month"
                                 axisLine={false}
                                 tickLine={false}
-                                tick={{ fill: "#6B7280", fontSize: 11 }}
+                                tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
                             />
                             <YAxis
                                 axisLine={false}
                                 tickLine={false}
-                                tick={{ fill: "#6B7280", fontSize: 11 }}
+                                tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
                                 tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
                                 width={45}
                             />
                             <Tooltip
-                                cursor={{ fill: "#F3F4F6" }}
+                                cursor={{ fill: "var(--accent-subtle)" }}
                                 contentStyle={{
                                     borderRadius: "12px",
                                     border: "none",
@@ -154,6 +155,6 @@ export function MonthlyComparisonChart({ transactions }: MonthlyComparisonChartP
                     </ResponsiveContainer>
                 </div>
             )}
-        </div>
+        </RogueCard>
     );
 }

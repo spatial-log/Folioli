@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Sector } from "recharts";
 import { formatCurrency, getCategoryGroupSpending, GROUP_COLORS } from "@/lib/dashboardUtils";
 import { Transaction } from "@/lib/types";
+import { RogueCard, RogueCardTitle } from "@malovey/rogue-ui";
 
 interface ExpenseBreakdownProps {
     transactions: Transaction[];
@@ -23,10 +24,10 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
 
     return (
         <g>
-            <text x={x} y={y} fill="#374151" textAnchor={textAnchor} dominantBaseline="central" fontSize={12} fontWeight={600}>
+            <text x={x} y={y} fill="var(--foreground)" textAnchor={textAnchor} dominantBaseline="central" fontSize={12} fontWeight={600}>
                 {name}
             </text>
-            <text x={x} y={y + 14} fill="#6B7280" textAnchor={textAnchor} dominantBaseline="central" fontSize={11}>
+            <text x={x} y={y + 14} fill="var(--muted-foreground)" textAnchor={textAnchor} dominantBaseline="central" fontSize={11}>
                 {formatCurrency(value)} ({`${(percent * 100).toFixed(0)}%`})
             </text>
         </g>
@@ -47,24 +48,24 @@ export function ExpenseBreakdown({ transactions }: ExpenseBreakdownProps) {
 
     if (data.length === 0) {
         return (
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 h-full flex flex-col items-center justify-center text-center">
-                <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-6 self-start">
+            <RogueCard className="h-full flex flex-col items-center justify-center text-center">
+                <RogueCardTitle className="mb-6 self-start">
                     Spending Breakdown
-                </h3>
-                <div className="flex-1 flex flex-col items-center justify-center text-gray-400">
+                </RogueCardTitle>
+                <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground">
                     <p>No expense data available</p>
                 </div>
-            </div>
+            </RogueCard>
         );
     }
 
     return (
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 h-full flex flex-col">
-            <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-6">
+        <RogueCard className="h-full overflow-hidden">
+            <RogueCardTitle className="mb-4">
                 Spending by Category
-            </h3>
+            </RogueCardTitle>
 
-            <div className="flex-1 min-h-[300px] w-full relative">
+            <div className="h-[320px] w-full relative">
                 <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                         <Pie
@@ -92,6 +93,6 @@ export function ExpenseBreakdown({ transactions }: ExpenseBreakdownProps) {
                     </PieChart>
                 </ResponsiveContainer>
             </div>
-        </div>
+        </RogueCard>
     );
 }
